@@ -150,7 +150,7 @@ typedef struct {
 } sip_interface;
 
 struct sip_hash_st {
-    sip_state *state;
+    sip_state state[1];
     const sip_interface *methods;
 };
 
@@ -325,8 +325,6 @@ sip_hash_new(const uint8_t key[16], int c, int d)
     sip_hash *h = NULL;
 
     if (!(h = (sip_hash *) malloc(sizeof(sip_hash)))) return NULL;
-    h->state = NULL;
-    if (!(h->state = (sip_state *) malloc(sizeof(sip_state)))) return NULL;
     h->state->c = c;
     h->state->d = d;
     h->state->buflen = 0;
@@ -382,7 +380,6 @@ sip_hash_digest_integer(sip_hash *h, const uint8_t *data, size_t data_len, uint6
 void
 sip_hash_free(sip_hash *h)
 {
-    free(h->state);
     free(h);
 }
 
