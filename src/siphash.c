@@ -130,28 +130,14 @@ xor64_to(uint64_t *v, const uint64_t s)
 #define XOR64_INT(v, x) ((v).lo ^= (x))
 #endif
 
-typedef struct {
-  int c;
-  int d;
-  uint64_t v[4];
-  uint8_t buf[sizeof(uint64_t)];
-  uint8_t buflen;
-  uint8_t msglen_byte;
-} sip_state;
-
 static const char sip_init_state_bin[] = "uespemos""modnarod""arenegyl""setybdet";
 #define sip_init_state (*(uint64_t (*)[4])sip_init_state_bin)
 
 #if SIP_HASH_STREAMING
-typedef struct {
+struct sip_interface_st {
     void (*init)(sip_state *s, const uint8_t *key);
     void (*update)(sip_state *s, const uint8_t *data, size_t len);
     void (*final)(sip_state *s, uint64_t *digest);
-} sip_interface;
-
-struct sip_hash_st {
-    sip_state state[1];
-    const sip_interface *methods;
 };
 
 static void int_sip_init(sip_state *state, const uint8_t *key);

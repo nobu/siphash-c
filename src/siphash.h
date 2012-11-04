@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-typedef struct sip_hash_st sip_hash;
-
 #ifndef HAVE_UINT64_T
 typedef struct {
     uint32_t u32[2];
@@ -14,6 +12,22 @@ typedef struct {
 #else
 typedef uint64_t sip_uint64_t;
 #endif
+
+typedef struct {
+    int c;
+    int d;
+    uint64_t v[4];
+    uint8_t buf[sizeof(uint64_t)];
+    uint8_t buflen;
+    uint8_t msglen_byte;
+} sip_state;
+
+typedef struct sip_interface_st sip_interface;
+
+typedef struct {
+    sip_state state[1];
+    const sip_interface *methods;
+} sip_hash;
 
 sip_hash *sip_hash_new(const uint8_t key[16], int c, int d);
 int sip_hash_update(sip_hash *h, const uint8_t *data, size_t len);
