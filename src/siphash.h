@@ -11,6 +11,8 @@ typedef struct {
     uint32_t u32[2];
 } sip_uint64_t;
 #define uint64_t sip_uint64_t
+#else
+typedef uint64_t sip_uint64_t;
 #endif
 
 sip_hash *sip_hash_new(uint8_t key[16], int c, int d);
