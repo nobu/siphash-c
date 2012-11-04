@@ -311,6 +311,12 @@ sip_hash_new(const uint8_t key[16], int c, int d)
     sip_hash *h = NULL;
 
     if (!(h = (sip_hash *) malloc(sizeof(sip_hash)))) return NULL;
+    return sip_hash_init(h, key, c, d);
+}
+
+sip_hash *
+sip_hash_init(sip_hash *h, const uint8_t key[16], int c, int d)
+{
     h->state->c = c;
     h->state->d = d;
     h->state->buflen = 0;

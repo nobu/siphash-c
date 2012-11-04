@@ -30,6 +30,7 @@ typedef struct {
 } sip_hash;
 
 sip_hash *sip_hash_new(const uint8_t key[16], int c, int d);
+sip_hash *sip_hash_init(sip_hash *h, const uint8_t key[16], int c, int d);
 int sip_hash_update(sip_hash *h, const uint8_t *data, size_t len);
 int sip_hash_final(sip_hash *h, uint8_t **digest, size_t *len);
 int sip_hash_final_integer(sip_hash *h, uint64_t *digest);
