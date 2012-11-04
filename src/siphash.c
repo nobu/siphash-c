@@ -140,8 +140,8 @@ static const char sip_init_state_bin[] = "uespemos""modnarod""arenegyl""setybdet
 #define sip_init_state (*(uint64_t (*)[4])sip_init_state_bin)
 
 typedef struct {
-    void (*init)(sip_state *s, uint8_t *key);
-    void (*update)(sip_state *s, uint8_t *data, size_t len);
+    void (*init)(sip_state *s, const uint8_t *key);
+    void (*update)(sip_state *s, const uint8_t *data, size_t len);
     void (*final)(sip_state *s, uint64_t *digest);
 } sip_interface;
 
@@ -150,8 +150,8 @@ struct sip_hash_st {
     const sip_interface *methods;
 };
 
-static void int_sip_init(sip_state *state, uint8_t *key);
-static void int_sip_update(sip_state *state, uint8_t *data, size_t len);
+static void int_sip_init(sip_state *state, const uint8_t *key);
+static void int_sip_update(sip_state *state, const uint8_t *data, size_t len);
 static void int_sip_final(sip_state *state, uint64_t *digest);
 
 static const sip_interface sip_methods = {
@@ -193,7 +193,7 @@ int_sip_dump(sip_state *state)
 }
 
 static void
-int_sip_init(sip_state *state, uint8_t key[16])
+int_sip_init(sip_state *state, const uint8_t key[16])
 {
     uint64_t k0, k1;
 
@@ -225,7 +225,7 @@ int_sip_update_block(sip_state *state, uint64_t m)
 }
 
 static inline void
-int_sip_pre_update(sip_state *state, uint8_t **pdata, size_t *plen)
+int_sip_pre_update(sip_state *state, const uint8_t **pdata, size_t *plen)
 {
     int to_read;
     uint64_t m;
@@ -242,7 +242,7 @@ int_sip_pre_update(sip_state *state, uint8_t **pdata, size_t *plen)
 }
 
 static inline void
-int_sip_post_update(sip_state *state, uint8_t *data, size_t len)
+int_sip_post_update(sip_state *state, const uint8_t *data, size_t len)
 {
     uint8_t r = len % sizeof(uint64_t);
     if (r) {
@@ -252,7 +252,7 @@ int_sip_post_update(sip_state *state, uint8_t *data, size_t len)
 }
 
 static void
-int_sip_update(sip_state *state, uint8_t *data, size_t len)
+int_sip_update(sip_state *state, const uint8_t *data, size_t len)
 {
     uint64_t *end;
     uint64_t *data64;
@@ -314,7 +314,7 @@ int_sip_final(sip_state *state, uint64_t *digest)
 }
 
 sip_hash *
-sip_hash_new(uint8_t key[16], int c, int d)
+sip_hash_new(const uint8_t key[16], int c, int d)
 {
     sip_hash *h = NULL;
 
@@ -331,7 +331,7 @@ sip_hash_new(uint8_t key[16], int c, int d)
 }
 
 int
-sip_hash_update(sip_hash *h, uint8_t *msg, size_t len)
+sip_hash_update(sip_hash *h, const uint8_t *msg, size_t len)
 {
     h->methods->update(h->state, msg, len);
     return 1;
@@ -360,14 +360,14 @@ sip_hash_final_integer(sip_hash *h, uint64_t *digest)
 }
 
 int
-sip_hash_digest(sip_hash *h, uint8_t *data, size_t data_len, uint8_t **digest, size_t *digest_len)
+sip_hash_digest(sip_hash *h, const uint8_t *data, size_t data_len, uint8_t **digest, size_t *digest_len)
 {
     if (!sip_hash_update(h, data, data_len)) return 0;
     return sip_hash_final(h, digest, digest_len);
 }
 
 int
-sip_hash_digest_integer(sip_hash *h, uint8_t *data, size_t data_len, uint64_t *digest)
+sip_hash_digest_integer(sip_hash *h, const uint8_t *data, size_t data_len, uint64_t *digest)
 {
     if (!sip_hash_update(h, data, data_len)) return 0;
     return sip_hash_final_integer(h, digest);
@@ -395,12 +395,12 @@ do {					\
 } while (0)
 
 uint64_t
-sip_hash24(uint8_t key[16], uint8_t *data, size_t len)
+sip_hash24(const uint8_t key[16], const uint8_t *data, size_t len)
 {
     uint64_t k0, k1;
     uint64_t v0, v1, v2, v3;
     uint64_t m, last;
-    uint8_t *end = data + len - (len % sizeof(uint64_t));
+    const uint8_t *end = data + len - (len % sizeof(uint64_t));
 
     k0 = U8TO64_LE(key);
     k1 = U8TO64_LE(key + sizeof(uint64_t));
