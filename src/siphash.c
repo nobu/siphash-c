@@ -1,6 +1,9 @@
 #include <string.h>
 #include <stdio.h>
 #include "siphash.h"
+#ifndef SIP_HASH_STREAMING
+  #define SIP_HASH_STREAMING 1
+#endif
 
 #ifdef _WIN32
   #define BYTE_ORDER __LITTLE_ENDIAN
@@ -139,6 +142,7 @@ typedef struct {
 static const char sip_init_state_bin[] = "uespemos""modnarod""arenegyl""setybdet";
 #define sip_init_state (*(uint64_t (*)[4])sip_init_state_bin)
 
+#if SIP_HASH_STREAMING
 typedef struct {
     void (*init)(sip_state *s, const uint8_t *key);
     void (*update)(sip_state *s, const uint8_t *data, size_t len);
@@ -159,6 +163,7 @@ static const sip_interface sip_methods = {
     int_sip_update,
     int_sip_final
 };
+#endif /* SIP_HASH_STREAMING */
 
 #define SIP_COMPRESS(v0, v1, v2, v3)	\
 do {					\
@@ -178,6 +183,7 @@ do {					\
     ROTL64_TO((v2), 32);		\
 } while(0)
 
+#if SIP_HASH_STREAMING
 static void
 int_sip_dump(sip_state *state)
 {
@@ -385,6 +391,7 @@ sip_hash_dump(sip_hash *h)
 {
     int_sip_dump(h->state);
 }
+#endif /* SIP_HASH_STREAMING */
 
 #define SIP_2_ROUND(m, v0, v1, v2, v3)	\
 do {					\
