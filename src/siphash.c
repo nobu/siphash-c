@@ -422,7 +422,7 @@ sip_hash24(const uint8_t key[16], const uint8_t *data, size_t len)
 #endif
 
 #ifdef HAVE_UINT64_T
-    last = len << 56;
+    last = (uint64_t)len << 56;
 #define OR_BYTE(n) (last |= ((uint64_t) end[n]) << ((n) * 8))
 #else
     last.hi = len << 24;
